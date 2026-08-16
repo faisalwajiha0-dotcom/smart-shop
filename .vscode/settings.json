@@ -12,7 +12,9 @@
   "editor.formatOnPaste": false,
   "editor.formatOnType": false,
   "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+
   "editor.codeActionsOnSave": {
+    "source.fixAll": "never",
     "source.fixAll.eslint": "always"
   },
 }
