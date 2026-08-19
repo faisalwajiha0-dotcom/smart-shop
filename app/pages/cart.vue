@@ -1,5 +1,4 @@
 <script setup>
-/* eslint-disable */
 import { ref, computed, onMounted } from 'vue'
 import { useToast } from '#imports'
 
@@ -7,170 +6,325 @@ const toast = useToast()
 
 const cart = ref([])
 
-// 🔥 Load from DB API
-const loadCart = async () => {
-  const data = await $fetch('/api/cart')
-  cart.value = data.map(item => ({
-    ...item,
-    quantity: item.quantity || 1
-  }))
-}
-
+/* =========================
+   LOAD CART FROM LOCALSTORAGE
+========================= */
 onMounted(() => {
-  loadCart()
+  const savedCart = localStorage.getItem('cart')
+
+  if (savedCart) {
+    try {
+      cart.value = JSON.parse(savedCart)
+    }
+    catch {
+      cart.value = []
+    }
+  }
 })
 
-// Total price
+/* =========================
+   SAVE CART
+========================= */
+const saveCart = () => {
+  localStorage.setItem('cart', JSON.stringify(cart.value))
+}
+
+/* =========================
+   TOTAL ITEMS
+========================= */
+const totalItems = computed(() => {
+  return cart.value.reduce((total, item) => {
+    return total + item.quantity
+  }, 0)
+})
+
+/* =========================
+   TOTAL PRICE
+========================= */
 const totalPrice = computed(() => {
   return cart.value
-    .reduce((sum, item) => sum + (item.price * item.quantity), 0)
+    .reduce((total, item) => {
+      return total + Number(item.price) * item.quantity
+    }, 0)
     .toFixed(2)
 })
 
-// Remove item (DB se delete)
-const removeItem = async (index) => {
+/* =========================
+   INCREASE QUANTITY
+========================= */
+const increaseQty = index => {
+  cart.value[index].quantity++
+  saveCart()
+}
+
+/* =========================
+   DECREASE QUANTITY
+========================= */
+const decreaseQty = index => {
+  if (cart.value[index].quantity > 1) {
+    cart.value[index].quantity--
+    saveCart()
+  }
+}
+
+/* =========================
+   REMOVE ITEM
+========================= */
+const removeItem = index => {
   const item = cart.value[index]
 
-  await $fetch('/api/cart', {
-    method: 'DELETE',
-    body: { id: item.id }
-  })
-
   cart.value.splice(index, 1)
+  saveCart()
 
   toast.add({
-    title: 'Removed',
-    description: `${item.title} removed ❌`,
+    title: 'Removed from Cart',
+    description: `${item.title} removed from your cart.`,
     color: 'error'
   })
 }
 
-// Increase quantity (simple frontend update now)
-const increaseQty = (index) => {
-  cart.value[index].quantity++
-}
-
-// Decrease quantity
-const decreaseQty = (index) => {
-  if (cart.value[index].quantity > 1) {
-    cart.value[index].quantity--
-  }
-}
-
-// Checkout
-const proceedToCheckout = () => {
-  if (cart.value.length === 0) {
-    toast.add({
-      title: 'Cart Empty',
-      description: 'Please add items before checkout 🛒',
-      color: 'error'
-    })
-    return
-  }
+/* =========================
+   CLEAR CART
+========================= */
+const clearCart = () => {
+  cart.value = []
+  localStorage.removeItem('cart')
 
   toast.add({
-    title: 'Success',
-    description: 'Checkout coming soon 🚀',
+    title: 'Cart Cleared',
+    description: 'All products have been removed.',
     color: 'success'
   })
 }
 </script>
 
 <template>
-  <div class="max-w-7xl mx-auto px-4 py-12">
+  <UMain class="min-h-screen bg-[#0b1224]">
+    <!-- =========================
+         PAGE HEADER
+    ========================== -->
+    <section class="border-b border-gray-800">
+      <UContainer class="py-12 text-center sm:py-14">
+        <h1 class="text-5xl font-bold mb-4  flex justify-center gap-3">
+          <span class="bg-blue-500 bg-clip-text text-transparent">
+            Your Cart
+          </span>
+          <UIcon name="i-lucide-shopping-cart" class="text-5xl text-blue-500" />
+        </h1>
 
-    <h1 class="text-5xl font-bold mb-4 text-center flex items-center justify-center gap-3">
-      <span class="bg-blue-500 bg-clip-text text-transparent">
-        Your Cart
-      </span>
-      <UIcon name="i-lucide-shopping-cart" class="text-5xl text-blue-500" />
+        <p class="mt-4 text-blue-200">
+          Review your items before checkout.
+        </p>
+      </UContainer>
+    </section>
 
-    </h1>
-
-    <!-- ✅ Empty Cart -->
-    <div v-if="cart.length === 0" class="text-center text-gray-400 space-y-4">
-      <p class="text-lg text-blue-200">Your cart is empty </p>
-
-      <NuxtLink to="/products"
-        class="inline-block  bg-linear-to-r from-blue-500 to-purple-600 text-white px-5 py-2 rounded-lg transition">
-        Shop Now
-      </NuxtLink>
-    </div>
-
-    <!-- ✅ Cart Content -->
-    <div v-else class="grid grid-cols-1 md:grid-cols-12 gap-6">
-
-      <!-- Cart Items -->
-      <div class="md:col-span-8 space-y-4">
-        <div v-for="(item, index) in cart" :key="index" class="flex items-center bg-[#0f172a] p-4 rounded-xl shadow-md">
-
-          <img :src="item.img || '/images/placeholder.png'" :alt="item.title"
-            class="w-24 h-24 object-cover rounded-xl mr-4 transition duration-300 hover:scale-105">
-
-          <div class="flex-1">
-            <h2 class="text-gray-300 font-semibold text-lg">
-              {{ item.title }}
-            </h2>
-
-            <p class="text-blue-400 font-bold mt-1">
-              ${{ item.price }}
-            </p>
-
-            <!-- Quantity -->
-            <div class="flex items-center mt-3 space-x-2">
-
-              <button :disabled="item.quantity === 1"
-                class="px-2 py-1 bg-gray-700 text-white rounded disabled:opacity-50" @click="decreaseQty(index)">
-                -
-              </button>
-
-              <span class="text-gray-300 font-semibold">
-                {{ item.quantity }}
-              </span>
-
-              <button class="px-2 py-1 bg-gray-700 text-white rounded" @click="increaseQty(index)">
-                +
-              </button>
-
-            </div>
-          </div>
-
-          <!-- Remove -->
-          <button class="text-red-500 ml-4 font-bold hover:underline" @click="removeItem(index)">
-            Remove
-          </button>
+    <!-- =========================
+         EMPTY CART
+    ========================== -->
+    <UContainer
+      v-if="cart.length === 0"
+      class="py-20">
+      <div
+        class="mx-auto max-w-xl rounded-2xl border border-gray-800 bg-[#111827] p-10 text-center shadow-xl">
+        <div
+          class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-blue-500/10">
+          <UIcon
+            name="i-lucide-shopping-cart"
+            class="h-10 w-10 text-blue-400" />
         </div>
-      </div>
 
-      <!-- Cart Summary -->
-      <div class="md:col-span-4 bg-[#1f2937] p-6 rounded-xl shadow-md h-fit mt-14">
-
-        <h2 class="text-gray-300 text-xl font-bold mb-4">
-          Order Summary
+        <h2 class="mt-6 text-2xl font-bold text-white">
+          Your Cart is Empty
         </h2>
 
-        <div class="flex justify-between text-gray-300 mb-2">
-          <span>Items:</span>
-          <span>{{ cart.length }}</span>
-        </div>
+        <p class="mt-3 text-gray-400">
+          Looks like you haven't added anything to your cart yet.
+        </p>
 
-        <div class="flex justify-between text-gray-300 mb-4">
-          <span>Total:</span>
-          <span class="font-bold text-blue-400">
-            ${{ totalPrice }}
-          </span>
-        </div>
-
-        <button class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded transition"
-          @click="proceedToCheckout">
-          Proceed to Checkout
-        </button>
-
-        <NuxtLink to="/products" class="block mt-4 text-center text-blue-400 underline">
-          Continue Shopping
-        </NuxtLink>
-
+        <UButton
+          to="/products"
+          size="lg"
+          class="mt-7 bg-linear-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500">
+          Start Shopping 🛍️
+        </UButton>
       </div>
-    </div>
-  </div>
+    </UContainer>
+
+    <!-- =========================
+     CART CONTENT
+========================== -->
+    <UContainer
+      v-else
+      class="py-12">
+      <div class="grid items-start gap-8 lg:grid-cols-3">
+        <!-- LEFT: CART ITEMS -->
+        <div class="lg:col-span-2">
+          <div class="flex items-center justify-between mb-5">
+            <div>
+              <h2 class="text-2xl font-bold text-white">
+                Cart Items
+              </h2>
+
+              <p class="mt-1 text-sm text-gray-400">
+                {{ totalItems }}
+                {{ totalItems === 1 ? 'item' : 'items' }}
+                in your cart
+              </p>
+            </div>
+
+            <button
+              class="text-sm font-semibold text-red-400 transition hover:text-red-300"
+              @click="clearCart">
+              Clear Cart
+            </button>
+          </div>
+
+          <!-- Product Cards -->
+          <div class="space-y-5">
+            <div
+              v-for="(item, index) in cart"
+              :key="item.productId"
+              class="group rounded-2xl border border-gray-800 bg-[#111827] p-4 shadow-lg transition duration-300 hover:border-blue-500/50 hover:shadow-blue-500/5 sm:p-5">
+              <div class="flex flex-col gap-5 sm:flex-row sm:items-center">
+                <!-- Image -->
+                <div
+                  class="h-28 w-full shrink-0 overflow-hidden rounded-xl bg-[#0f172a] sm:h-28 sm:w-28">
+                  <img
+                    :src="item.image || '/images/placeholder.png'"
+                    :alt="item.title"
+                    class="h-full w-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+
+                <!-- Product Info -->
+                <div class="min-w-0 flex-1">
+                  <p class="text-xs font-semibold uppercase tracking-wider text-blue-400">
+                    Smart Shop
+                  </p>
+
+                  <h3 class="mt-1 truncate text-lg font-bold text-white">
+                    {{ item.title }}
+                  </h3>
+
+                  <p
+                    class="mt-1 bg-linear-to-r from-blue-400 to-purple-500 bg-clip-text text-lg font-bold text-transparent">
+                    ${{ Number(item.price).toFixed(2) }}
+                  </p>
+
+                  <!-- Quantity -->
+                  <div class="mt-4 flex items-center gap-3">
+                    <span class="text-sm text-gray-400">
+                      Quantity:
+                    </span>
+
+                    <div
+                      class="flex items-center overflow-hidden rounded-lg border border-gray-700 bg-[#0b1224]">
+                      <button
+                        :disabled="item.quantity === 1"
+                        class="flex h-8 w-8 items-center justify-center text-gray-300 hover:bg-blue-600 hover:text-white disabled:opacity-40"
+                        @click="decreaseQty(index)">
+                        −
+                      </button>
+
+                      <span
+                        class="flex h-8 min-w-9 items-center justify-center border-x border-gray-700 px-2 text-sm font-semibold text-white">
+                        {{ item.quantity }}
+                      </span>
+
+                      <button
+                        class="flex h-8 w-8 items-center justify-center text-gray-300 hover:bg-purple-600 hover:text-white"
+                        @click="increaseQty(index)">
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Remove -->
+                <button
+                  class="self-start rounded-lg p-2 text-gray-500 transition hover:bg-red-500/10 hover:text-red-400 sm:self-center"
+                  title="Remove item"
+                  @click="removeItem(index)">
+                  <UIcon
+                    name="i-lucide-trash-2"
+                    class="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =========================
+     ORDER SUMMARY
+========================= -->
+
+        <div
+          class="rounded-2xl border border-gray-800 bg-[#111827] p-6 shadow-xl">
+          <h2 class="mt-0 text-2xl font-bold text-white">
+            Order Summary
+          </h2>
+
+          <div class="my-6 h-px bg-gray-800" />
+
+          <!-- Items -->
+          <div class="flex justify-between text-gray-400">
+            <span>Items</span>
+
+            <span class="font-medium text-white">
+              {{ totalItems }}
+            </span>
+          </div>
+
+          <!-- Subtotal -->
+          <div class="mt-4 flex justify-between text-gray-400">
+            <span>Subtotal</span>
+
+            <span class="font-medium text-white">
+              ${{ totalPrice }}
+            </span>
+          </div>
+
+          <!-- Shipping -->
+          <div class="mt-4 flex justify-between text-gray-400">
+            <span>Shipping</span>
+
+            <span class="font-medium text-green-400">
+              Free
+            </span>
+          </div>
+
+          <div class="my-6 h-px bg-gray-800" />
+
+          <!-- Total -->
+          <div class="flex items-center justify-between">
+            <span class="text-lg font-semibold text-white">
+              Total
+            </span>
+
+            <span
+              class="bg-linear-to-r from-blue-400 to-purple-500 bg-clip-text text-2xl font-extrabold text-transparent">
+              ${{ totalPrice }}
+            </span>
+          </div>
+
+          <!-- Checkout -->
+          <UButton
+            to="/checkout"
+            size="lg"
+            block
+            class="mt-7 bg-linear-to-r from-blue-600 to-purple-600 font-semibold text-white transition hover:from-blue-500 hover:to-purple-500">
+            Proceed to Checkout
+          </UButton>
+
+          <!-- Continue Shopping -->
+          <UButton
+            to="/products"
+            variant="outline"
+            block
+            class="mt-3 border-gray-700 text-gray-300 hover:border-blue-500 hover:text-blue-400">
+            Continue Shopping
+          </UButton>
+        </div>
+      </div>
+    </UContainer>
+  </UMain>
 </template>

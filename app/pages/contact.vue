@@ -2,7 +2,9 @@
 /* eslint-disable */
 import { ref } from 'vue'
 import { useToast } from '#imports'
+
 const toast = useToast()
+
 const formData = ref({
   name: '',
   email: '',
@@ -12,21 +14,37 @@ const formData = ref({
 const isSubmitting = ref(false)
 
 const handleSubmit = async () => {
-  isSubmitting.value = true
-  await new Promise(r => setTimeout(r, 1200))
+  // Check empty fields
+  if (!formData.value.name.trim()) {
+    toast.add({
+      title: 'Name, Email and Message required',
+      description: 'Please enter your name, email, and message.',
+      color: 'error'
+    })
+    return
+  }
 
+
+
+  // Sending
+  isSubmitting.value = true
+
+  // Success
   toast.add({
     title: 'Message Successfully Sent!',
     description: 'Thank you! Your message has been sent successfully.',
-    icon: 'i-heroicons-check-circle',
     color: 'success'
-
   })
 
-  formData.value = { name: '', email: '', message: '' }
+  // Clear form
+  formData.value = {
+    name: '',
+    email: '',
+    message: ''
+  }
+
   isSubmitting.value = false
 }
-
 </script>
 
 <template>

@@ -1,5 +1,6 @@
 <script setup>
 const route = useRoute()
+const toast = useToast()
 
 const products = [
   {
@@ -111,6 +112,39 @@ const product = computed(() => {
     item => item.id === Number(route.params.id)
   )
 })
+
+/* 🛒 Add Product to Cart */
+const addToCart = () => {
+  if (!product.value) return
+
+  const savedCart = localStorage.getItem('cart')
+  const cart = savedCart ? JSON.parse(savedCart) : []
+
+  const existingProduct = cart.find(
+    item => item.productId === product.value.id
+  )
+
+  if (existingProduct) {
+    existingProduct.quantity += 1
+  }
+  else {
+    cart.push({
+      productId: product.value.id,
+      title: product.value.title,
+      price: product.value.price,
+      image: product.value.image,
+      quantity: 1
+    })
+  }
+
+  localStorage.setItem('cart', JSON.stringify(cart))
+
+  toast.add({
+    title: 'Added to Cart 🛒',
+    description: `${product.value.title} has been added to your cart.`,
+    color: 'success'
+  })
+}
 </script>
 
 <template>
@@ -189,7 +223,8 @@ const product = computed(() => {
           <div class="mt-10 flex gap-4">
             <UButton
               size="lg"
-              class="bg-linear-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500">
+              class="bg-linear-to-r from-blue-600 to-purple-600 text-white transition hover:from-blue-500 hover:to-purple-500"
+              @click="addToCart">
               🛒 Add to Cart
             </UButton>
 
