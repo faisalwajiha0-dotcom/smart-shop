@@ -98,20 +98,20 @@ const filteredProducts = computed(() => {
 </script>
 
 <template>
-  <UMain class="min-h-screen bg-[#0b1224]">
+  <UMain class="min-h-screen">
     <!-- Page Header -->
     <section class="border-b border-gray-800">
       <UContainer class="py-14 text-center sm:py-16">
         <h1
-          class="mt-0 bg-linear-to-r from-blue-400 to-purple-500 bg-clip-text text-5xl font-bold text-transparent">
+          class="mt-0  text-5xl font-bold text-blue-500">
           Products
         </h1>
         <p
-          class="text-sm mt-4 font-bold uppercase tracking-[0.25em] text-blue-400">
+          class="text-sm mt-4 font-bold uppercase tracking-[0.25em] text-purple-400">
           Our Collection
         </p>
 
-        <p class="mx-auto mt-4 max-w-2xl text-gray-400 sm:text-lg">
+        <p class="mx-auto mt-4 max-w-2xl text-purple-200 sm:text-lg">
           Explore our collection of quality products and find something
           perfect for you.
         </p>

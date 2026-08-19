@@ -30,12 +30,12 @@ const items = computed<NavigationMenuItem[]>(() => [
 </script>
 
 <template>
-  <UHeader>
+  <UHeader class="bg-linear-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
     <template #title>
-      <span class="text-3xl font-bold">Smart Shop</span>
+      <span class="text-4xl font-bold bg-linear-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">Smart Shop</span>
     </template>
     <template #right>
-      <UNavigationMenu :items="items" />
+      <UNavigationMenu :items="items" class="[&_a]:text-blue-400 [&_a:hover]:text-purple-500" />
     </template>
   </UHeader>
 </template>
