@@ -14,20 +14,37 @@ const formData = ref({
 const isSubmitting = ref(false)
 
 const handleSubmit = async () => {
-  // Check empty fields
-  if (!formData.value.name.trim()) {
+  // Check all required fields
+  if (
+    !formData.value.name.trim() ||
+    !formData.value.email.trim() ||
+    !formData.value.message.trim()
+  ) {
     toast.add({
-      title: 'Name, Email and Message required',
+      title: 'Required Fields',
       description: 'Please enter your name, email, and message.',
       color: 'error'
     })
     return
   }
 
+  // Simple email validation
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
+  if (!emailPattern.test(formData.value.email)) {
+    toast.add({
+      title: 'Invalid Email',
+      description: 'Please enter a valid email address.',
+      color: 'error'
+    })
+    return
+  }
 
-  // Sending
+  // Sending state
   isSubmitting.value = true
+
+  // Small delay for better UX
+  await new Promise(resolve => setTimeout(resolve, 800))
 
   // Success
   toast.add({
@@ -48,47 +65,69 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-
-  <section class="py-16 px-6">
-    <div class="max-w-2xl mx-auto">
-      <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-3xl p-10 shadow-xl">
+  <section class="px-6 py-16">
+    <div class="mx-auto max-w-2xl">
+      <div
+        class="rounded-3xl border border-gray-200 bg-white p-10 shadow-xl dark:border-gray-700 dark:bg-gray-900"
+      >
         <!-- Heading -->
-        <div class="text-center mb-12">
-          <h1 class="text-5xl font-extrabold bg-blue-500 bg-clip-text text-transparent mb-3">
+        <div class="mb-12 text-center">
+          <h1
+            class="mb-3 bg-blue-500 bg-clip-text text-5xl font-extrabold text-transparent"
+          >
             Contact Us
           </h1>
+
           <p class="text-gray-500 dark:text-blue-200">
             Have questions? We'd love to hear from you!
           </p>
         </div>
 
-        <!-- Form Container -->
-        <form class="space-y-6" @submit.prevent="handleSubmit">
+        <!-- Form -->
+        <form
+          class="space-y-6"
+          @submit.prevent="handleSubmit"
+        >
+          <!-- Name -->
           <div>
-
-            <input v-model="formData.name" type="text" placeholder="Enter your name"
-              class="w-full p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-800 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+            <input
+              v-model="formData.name"
+              type="text"
+              placeholder="Enter your name"
+              class="w-full rounded-xl border border-gray-300 p-3 text-gray-800 outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+            >
           </div>
 
+          <!-- Email -->
           <div>
-
-            <input v-model="formData.email" type="email" placeholder="Enter your email"
-              class="w-full p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-800 text-gray-800 dark:text-white focus:ring-1 focus:ring-blue-500 outline-none">
+            <input
+              v-model="formData.email"
+              type="email"
+              placeholder="Enter your email"
+              class="w-full rounded-xl border border-gray-300 p-3 text-gray-800 outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+            >
           </div>
 
+          <!-- Message -->
           <div>
-
-            <textarea v-model="formData.message" rows="4" placeholder="Write your message..."
-              class="w-full p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-800 text-gray-800 dark:text-white focus:ring-1 focus:ring-blue-500 outline-none" />
+            <textarea
+              v-model="formData.message"
+              rows="4"
+              placeholder="Write your message..."
+              class="w-full resize-none rounded-xl border border-gray-300 p-3 text-gray-800 outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+            />
           </div>
 
-          <button type="submit" :disabled="isSubmitting"
-            class="w-full py-3 bg-linear-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:opacity-90 transition">
+          <!-- Button -->
+          <button
+            type="submit"
+            :disabled="isSubmitting"
+            class="w-full rounded-xl bg-linear-to-r from-blue-600 to-purple-600 py-3 font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+          >
             {{ isSubmitting ? 'Sending...' : 'Send Message' }}
           </button>
         </form>
       </div>
     </div>
-
   </section>
 </template>
