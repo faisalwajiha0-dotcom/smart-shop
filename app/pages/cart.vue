@@ -105,11 +105,14 @@ const clearCart = () => {
     ========================== -->
     <section class="border-b border-gray-800">
       <UContainer class="py-12 text-center sm:py-14">
-        <h1 class="text-5xl font-bold mb-4  flex justify-center gap-3">
+        <h1 class="text-5xl font-bold mb-4 flex items-center justify-center gap-3">
           <span class="bg-blue-500 bg-clip-text text-transparent">
             Your Cart
           </span>
-          <UIcon name="i-lucide-shopping-cart" class="text-5xl text-blue-500" />
+
+          <UIcon
+            name="i-lucide-wallet-cards"
+            class="size-12 shrink-0 text-blue-500" />
         </h1>
 
         <p class="mt-4 text-blue-200">
@@ -293,7 +296,6 @@ const clearCart = () => {
           </div>
 
           <div class="my-6 h-px bg-gray-800" />
-
           <!-- Total -->
           <div class="flex items-center justify-between">
             <span class="text-lg font-semibold text-white">

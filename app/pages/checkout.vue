@@ -72,6 +72,12 @@ const placeOrder = () => {
 
 <template>
   <div class="max-w-7xl mx-auto px-4 py-12">
+    <UButton
+  to="/cart"
+  variant="ghost"
+  class="mb-6 text-gray-400 hover:text-blue-400">
+  ← Back to Cart
+</UButton>
 
 
     <h1 class="font-bold text-center mb-10 flex items-center justify-center gap-3">

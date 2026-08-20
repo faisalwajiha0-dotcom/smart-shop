@@ -104,8 +104,69 @@ const products = [
       'Durable material',
       'Everyday use'
     ]
+  },
+
+  // 7. Gaming Mouse
+  {
+    id: 7,
+    title: 'Gaming Mouse',
+    category: 'Electronics',
+    price: 34.99,
+    rating: 4.7,
+    image:
+      'https://images.unsplash.com/photo-1527814050087-3793815479db?auto=format&fit=crop&w=1000&q=80',
+    description:
+      'A responsive gaming mouse with a comfortable design, perfect for gaming and everyday computer use.',
+    features: [
+      'High precision sensor',
+      'Ergonomic design',
+      'Responsive buttons',
+      'Smooth performance'
+    ]
+  },
+
+  // 8. Classic Sunglasses
+  {
+    id: 8,
+    title: 'Classic Sunglasses',
+    category: 'Fashion',
+    price: 24.99,
+    rating: 4.6,
+    image:
+      'https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=1000&q=80',
+    description:
+      'Stylish classic sunglasses with a modern look, perfect for everyday outdoor use.',
+    features: [
+      'Classic design',
+      'Lightweight frame',
+      'Comfortable fit',
+      'Everyday style'
+    ]
+  },
+
+  // 9. Travel Bottle
+  {
+    id: 9,
+    title: 'Travel Bottle',
+    category: 'Accessories',
+    price: 19.99,
+    rating: 4.5,
+    image:
+      'https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=1000&q=80',
+    description:
+      'A lightweight and practical travel bottle designed for everyday hydration and outdoor activities.',
+    features: [
+      'Lightweight design',
+      'Reusable',
+      'Easy to carry',
+      'Travel friendly'
+    ]
   }
 ]
+
+/* =========================
+   CURRENT PRODUCT
+========================= */
 
 const product = computed(() => {
   return products.find(
@@ -113,12 +174,29 @@ const product = computed(() => {
   )
 })
 
-/* 🛒 Add Product to Cart */
+/* =========================
+   ADD TO CART
+========================= */
+
 const addToCart = () => {
   if (!product.value) return
 
+  let cart = []
+
   const savedCart = localStorage.getItem('cart')
-  const cart = savedCart ? JSON.parse(savedCart) : []
+
+  if (savedCart) {
+    try {
+      cart = JSON.parse(savedCart)
+
+      if (!Array.isArray(cart)) {
+        cart = []
+      }
+    }
+    catch {
+      cart = []
+    }
+  }
 
   const existingProduct = cart.find(
     item => item.productId === product.value.id
@@ -158,7 +236,10 @@ const addToCart = () => {
         ← Back to Products
       </UButton>
 
-      <!-- Product Found -->
+      <!-- =========================
+           PRODUCT FOUND
+      ========================== -->
+
       <div
         v-if="product"
         class="grid gap-10 lg:grid-cols-2">
@@ -168,7 +249,7 @@ const addToCart = () => {
           <img
             :src="product.image"
             :alt="product.title"
-            class="h-112.5 w-full object-cover">
+            class="h-[450px] w-full object-cover">
         </div>
 
         <!-- Product Information -->
@@ -193,7 +274,7 @@ const addToCart = () => {
           <!-- Price -->
           <p
             class="mt-6 text-3xl font-bold text-white">
-            ${{ product.price }}
+            ${{ product.price.toFixed(2) }}
           </p>
 
           <!-- Description -->
@@ -213,14 +294,17 @@ const addToCart = () => {
                 v-for="feature in product.features"
                 :key="feature"
                 class="flex items-center gap-3 text-gray-300">
-                <span class="text-blue-400">✓</span>
+                <span class="text-blue-400">
+                  ✓
+                </span>
+
                 {{ feature }}
               </li>
             </ul>
           </div>
 
-          <!-- Button -->
-          <div class="mt-10 flex gap-4">
+          <!-- Buttons -->
+          <div class="mt-10 flex flex-wrap gap-4">
             <UButton
               size="lg"
               class="bg-linear-to-r from-blue-600 to-purple-600 text-white transition hover:from-blue-500 hover:to-purple-500"
@@ -238,7 +322,10 @@ const addToCart = () => {
         </div>
       </div>
 
-      <!-- Product Not Found -->
+      <!-- =========================
+           PRODUCT NOT FOUND
+      ========================== -->
+
       <div
         v-else
         class="py-20 text-center">

@@ -53,7 +53,34 @@ const products = [
     rating: 4.4,
     image:
       'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80'
-  }
+  },
+  {
+    id: 7,
+    title: 'Gaming Mouse',
+    category: 'Electronics',
+    price: 34.99,
+    rating: 4.7,
+    image:
+    'https://images.unsplash.com/photo-1527814050087-3793815479db?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 8,
+    title: 'Classic Sunglasses',
+    category: 'Fashion',
+    price: 24.99,
+    rating: 4.6,
+    image:
+    'https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 9,
+    title: 'Travel Bottle',
+    category: 'Accessories',
+    price: 19.99,
+    rating: 4.5,
+    image:
+    'https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=800&q=80'
+  },
 ]
 
 const search = ref('')
@@ -102,16 +129,21 @@ const filteredProducts = computed(() => {
     <!-- Page Header -->
     <section class="border-b border-gray-800">
       <UContainer class="py-14 text-center sm:py-16">
-        <h1
-          class="mt-0  text-5xl font-bold text-blue-500">
-          Products
+        <h1 class="text-5xl font-bold mb-4 flex items-center justify-center gap-3">
+          <span class="bg-blue-500 bg-clip-text text-transparent">
+            Products
+          </span>
+
+          <UIcon
+            name="i-lucide-shopping-bag"
+            class="size-12 shrink-0 text-blue-500" />
         </h1>
         <p
           class="text-sm mt-4 font-bold uppercase tracking-[0.25em] text-purple-400">
           Our Collection
         </p>
 
-        <p class="mx-auto mt-4 max-w-2xl text-purple-200 sm:text-lg">
+        <p class="mx-auto mt-4 max-w-2xl text-gray-400 sm:text-lg">
           Explore our collection of quality products and find something
           perfect for you.
         </p>
