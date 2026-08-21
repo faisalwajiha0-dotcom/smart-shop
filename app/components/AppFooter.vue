@@ -16,26 +16,26 @@
 
         <!-- Social Icons -->
         <div class="flex gap-4 pt-2">
-          <a
-            href="#"
+          <NuxtLink
+            to="/"
             class="hover:text-blue-400 transition duration-300"
             aria-label="Facebook">
             <i class="fab fa-facebook text-lg" />
-          </a>
+          </NuxtLink>
 
-          <a
-            href="#"
+          <NuxtLink
+            to="/"
             class="hover:text-pink-400 transition duration-300"
             aria-label="Instagram">
             <i class="fab fa-instagram text-lg" />
-          </a>
+          </NuxtLink>
 
-          <a
-            href="#"
+          <NuxtLink
+            to="/"
             class="hover:text-blue-300 transition duration-300"
             aria-label="Twitter">
             <i class="fab fa-twitter text-lg" />
-          </a>
+          </NuxtLink>
         </div>
       </div>
 
