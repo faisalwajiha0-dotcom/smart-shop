@@ -249,7 +249,7 @@ const addToCart = () => {
           <img
             :src="product.image"
             :alt="product.title"
-            class="h-[450px] w-full object-cover">
+            class="h-112.5 w-full object-cover">
         </div>
 
         <!-- Product Information -->
